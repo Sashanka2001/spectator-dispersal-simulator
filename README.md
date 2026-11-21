@@ -72,7 +72,7 @@ The experiments indicate that additional exit routes reduce average dispersal ti
 In the uncertain crowd-size experiment, 30 crowd sizes were sampled, ranging from 132 to 449 pedestrians. Each crowd-size sample was evaluated using all three exit configurations.
 
 | Exit configuration | Mean T95 (s) | Mean peak density (persons/m²) |
-|---|---:|---:|
+| --- | ---: | ---: |
 | One exit | 40.095 | 2.158 |
 | Two exits | 37.170 | 1.558 |
 | Three exits | 36.385 | 1.300 |
