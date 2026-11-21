@@ -1,66 +1,103 @@
-# [Project Title]
+# Agent-Based Simulation of Spectator Dispersal after the Kandy Esala Perahera
 
-[One-sentence pitch: what this simulation does and the question it answers.]
+An interactive agent-based pedestrian simulation investigating how uncertain spectator crowd sizes and exit availability influence dispersal time and pedestrian congestion in a hypothetical environment.
 
-**[Live demo](https://[your-github-user].github.io/[repository-name]/)** · [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/[your-github-user]/[repository-name]/blob/main/notebook/project-name.ipynb)
+**[Live Demo](https://sashanka2001.github.io/spectator-dispersal-simulator/)** · [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RYV0lGvVD7e03OvkxBqfnaaH3U2t3OXF?usp=sharing)
 
-![Screenshot of the web demo](figures/demo-screenshot.png)
+![Spectator Dispersal Simulator web demo](figures/web-demo.png)
 
 ## The problem
 
-[The real-world situation, the specific question this simulation answers, and why it matters. Plain English, 1–2 short paragraphs.]
+Large public gatherings, such as the Kandy Esala Perahera, can result in substantial pedestrian crowds when spectators leave the event. The number of people dispersing and the availability of exit routes may influence how quickly the crowd clears and where congestion develops.
+
+This project investigates the following research question:
+
+**How do uncertain spectator crowd sizes and the availability of additional exit routes affect crowd dispersal time and pedestrian congestion after the Kandy Esala Perahera?**
+
+An agent-based simulation is developed to represent individual pedestrian movement within a simplified environment. Different crowd sizes and exit configurations are tested to examine their influence on dispersal performance.
 
 ## Quick start
 
-**Notebook:** click the *Open in Colab* badge above, then *Runtime → Run all*. Everything installs and runs in about [N] minutes on a free runtime.
+**Notebook:** Click the *Open in Colab* badge above. Select *Runtime → Run all* to execute the notebook. The notebook uses Python and the packages listed in `requirements.txt`.
 
-**Web demo:** open the [live demo](https://[your-github-user].github.io/[repository-name]/), or download this repository and double-click `docs/index.html`.
+**Web demo:** Open the [live demo](https://sashanka2001.github.io/spectator-dispersal-simulator/), or download this repository and double-click `docs/index.html` to run it locally.
 
 **Run locally (optional):**
 
 ```bash
 pip install -r requirements.txt
-jupyter notebook notebook/project-name.ipynb
+jupyter notebook notebook/spectator-dispersal-simulator.ipynb
 ```
 
 ## Using the demo
 
-[Two or three sentences on the main controls and outputs.] Full guide: [USER_GUIDE.md](USER_GUIDE.md).
+The web demo allows users to select a crowd size between 50 and 500 pedestrians, choose one, two or three exits, and adjust the walking-speed multiplier. The simulation provides a live visualisation of pedestrian movement and displays T95, clearance time, peak local density and exit utilisation.
+
+Full instructions: [USER_GUIDE.md](USER_GUIDE.md).
 
 ## Model and mathematics
 
-[Short summary of the model with its key equation(s), e.g. $\frac{dx}{dt} = f(x, t)$, and the numerical method.] Full derivations, assumptions and parameters: [THEORY.md](THEORY.md).
+The simulation uses an agent-based approach inspired by the Social Force Model. Each pedestrian is represented as an individual agent with a position, velocity, desired walking speed and radius. Movement is influenced by the desired direction towards an exit, repulsive interactions with other pedestrians and boundary repulsion.
+
+The model uses acceleration-based movement with a time step of 0.05 seconds. Velocity and position are updated using an explicit Euler scheme, subject to maximum speed and acceleration limits.
+
+The environment is represented by a hypothetical 40 m × 20 m rectangular area. Full mathematical descriptions, assumptions, parameters and equations are provided in [THEORY.md](THEORY.md).
 
 ## Verification
 
-[How you know the numbers are right: the check(s) you ran and the result, e.g. "the simulated mean wait matches the analytic M/M/1 value to within 2%".]
+The implementation includes checks for pedestrian counts, position boundaries, minimum initial separation, finite numerical values, exit status consistency, exit utilisation and density calculations.
 
-![Verification plot](figures/verification.png)
+Monte Carlo verification uses repeated simulations with controlled random seeds. Paired random seeds are used when comparing different exit configurations to support fair comparisons.
+
+The verification procedures and experimental checks are documented in the notebook.
+
+![Verification results](figures/verification.png)
 
 ## Concepts applied
 
-[Name the modelling and numerical concepts this project applies and how each is used. Generic wording only. Example: "This project applies next-event time-advance discrete-event simulation, inverse-transform random variate generation and Monte Carlo confidence intervals based on the law of large numbers, and verifies the simulator against analytic steady-state results."]
+This project applies the following modelling and numerical concepts:
+
+- **Agent-based modelling:** represents individual pedestrians as autonomous agents.
+- **Social-force-inspired modelling:** represents desired movement and repulsive interactions.
+- **Numerical integration:** uses explicit Euler updates to calculate pedestrian movement over time.
+- **Stochastic modelling:** generates synthetic pedestrian positions and desired walking speeds using seeded random numbers.
+- **Monte Carlo simulation:** performs repeated runs to examine variability in dispersal outcomes.
+- **Statistical analysis:** uses means, standard deviations, confidence intervals and paired comparisons to analyse simulation results.
+- **Model verification:** uses assertions and consistency checks to examine implementation correctness.
 
 ## Results
 
-[The answer to the question, with the key figure or table.]
+The experiments indicate that additional exit routes reduce average dispersal time and peak local density under the simulated conditions.
+
+In the uncertain crowd-size experiment, 30 crowd sizes were sampled, ranging from 132 to 449 pedestrians. Each crowd-size sample was evaluated using all three exit configurations.
+
+| Exit configuration | Mean T95 (s) | Mean peak density (persons/m²) |
+|---|---:|---:|
+| One exit | 40.095 | 2.158 |
+| Two exits | 37.170 | 1.558 |
+| Three exits | 36.385 | 1.300 |
+
+The three-exit configuration produced the lowest mean T95 and peak local density in this experiment. These results describe the simulated scenarios and should not be interpreted as measured outcomes from the actual event.
 
 ## Limitations and future work
 
-- [Most important assumption and how it limits the result]
-- [What you would add with more time or data]
+- The simulation uses a hypothetical rectangular environment rather than the actual street layout of Kandy.
+- Initial crowd positions and desired walking speeds are generated using synthetic values because measured pedestrian data are unavailable.
+- Individual behaviour is simplified, without fully representing group movement, route choices, obstacles, vehicles or emergency responses.
+- Future work could incorporate real street geometry, observed pedestrian data, model calibration, group behaviour and additional sensitivity analysis.
 
 ## Key references
 
-1. [Author, "Title," *Venue*, year. DOI/URL]
-2. [...]
+The theoretical background and modelling methods are supported by the sources listed in [REFERENCES.md](REFERENCES.md).
 
-Full list: [REFERENCES.md](REFERENCES.md).
+The most relevant sources should also be listed here before publication.
 
 ## AI assistance
 
-Developed with the help of AI coding and writing assistants. All code was reviewed, run and verified by the author.
+AI coding and writing assistants were used to support development, debugging and documentation. The implementation and outputs were reviewed and tested by the author. A detailed record of AI assistance is maintained separately.
 
 ## Licence and credits
 
-Code: [MIT](LICENSE). Data: [source, licence, e.g. "Weather data: Open-Meteo, CC BY 4.0"].
+The project code is released under the [MIT Licence](LICENSE).
+
+The simulation uses synthetic pedestrian information and assumed model parameters. No external pedestrian dataset is included.
