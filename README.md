@@ -90,8 +90,6 @@ The three-exit configuration produced the lowest mean T95 and peak local density
 
 The theoretical background and modelling methods are supported by the sources listed in [REFERENCES.md](REFERENCES.md).
 
-The most relevant sources should also be listed here before publication.
-
 ## AI assistance
 
 AI coding and writing assistants were used to support development, debugging and documentation. The implementation and outputs were reviewed and tested by the author. A detailed record of AI assistance is maintained separately.
