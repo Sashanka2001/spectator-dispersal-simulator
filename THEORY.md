@@ -1,4 +1,3 @@
-
 # Theory and Mathematics
 
 ## 1. Problem Formulation
@@ -81,13 +80,13 @@ $$
 
 where position is measured in metres (m) and velocity is measured in metres per second (m/s).
 
-Each pedestrian also has an individual desired walking speed \(v_i^0\) and radius \(r_i\).
+Each pedestrian also has an individual desired walking speed $v_i^0$ and radius $r_i$.
 
 ### 3.2 Desired Movement Towards an Exit
 
 Each pedestrian selects the nearest available exit based on the Euclidean distance to the centre of each exit.
 
-For an exit with vertical limits \(y_{\min,j}\) and \(y_{\max,j}\), its centre is:
+For an exit with vertical limits $y_{\min,j}$ and $y_{\max,j}$, its centre is:
 
 $$
 \mathbf{g}_j=
@@ -97,7 +96,7 @@ $$
 \end{bmatrix}
 $$
 
-Let \(j(i)\) represent the exit selected by pedestrian i. The desired direction is calculated as:
+Let $j(i)$ represent the exit selected by pedestrian $i$. The desired direction is calculated as:
 
 $$
 \mathbf{e}_i=
@@ -118,7 +117,7 @@ $$
 \frac{\mathbf{v}_i^{des}-\mathbf{v}_i}{\tau}
 $$
 
-where \(\tau\) is the relaxation time, set to 0.5 seconds. This term represents the tendency of a pedestrian to adjust their current velocity towards the desired velocity.
+where $\tau$ is the relaxation time, set to 0.5 seconds. This term represents the tendency of a pedestrian to adjust their current velocity towards the desired velocity.
 
 ### 3.3 Pedestrian Repulsion
 
@@ -160,7 +159,7 @@ where A = 2.0 m/s² and B = 0.5 m are assumed interaction parameters. The summat
 
 Environmental boundaries influence pedestrian movement through exponential repulsive terms.
 
-For a pedestrian with radius \(r_i\), the interaction strength associated with a wall at distance \(d_{iw}\) follows:
+For a pedestrian with radius $r_i$, the interaction strength associated with a wall at distance $d_{iw}$ follows:
 
 $$
 f_{iw}=A_w\exp\left(\frac{r_i-d_{iw}}{B_w}\right)
@@ -168,9 +167,9 @@ $$
 
 where:
 
-- \(A_w=2.0\text{ m/s}^2\) is the wall interaction acceleration coefficient.
-- \(B_w=0.5\text{ m}\) is the wall interaction decay parameter.
-- \(d_{iw}\) is the distance from the pedestrian to the relevant wall.
+- $A_w=2.0\text{ m/s}^2$ is the wall interaction acceleration coefficient.
+- $B_w=0.5\text{ m}$ is the wall interaction decay parameter.
+- $d_{iw}$ is the distance from the pedestrian to the relevant wall.
 
 The wall interaction acceleration is obtained by combining the repulsive contributions:
 
@@ -180,7 +179,7 @@ $$
 \sum_w f_{iw}\mathbf{n}_{iw}
 $$
 
-where \(\mathbf{n}_{iw}\) is a unit direction pointing away from the relevant wall.
+where $\mathbf{n}_{iw}$ is a unit direction pointing away from the relevant wall.
 
 The right boundary applies repulsion only to pedestrians outside all available exit openings. This allows pedestrians to move through the designated exits.
 
@@ -205,7 +204,7 @@ $$
 \right)
 $$
 
-where \(a_{\max}=4.0\text{ m/s}^2\).
+where $a_{\max}=4.0\text{ m/s}^2$.
 
 The pedestrian's updated velocity is also limited to a maximum speed of 2.0 m/s.
 
@@ -247,7 +246,7 @@ $$
 \rho_k(t)=\frac{N_k(t)}{A_k}
 $$
 
-where \(N_k(t)\) is the number of pedestrians in the cell and \(A_k=4\text{ m}^2\).
+where $N_k(t)$ is the number of pedestrians in the cell and $A_k=4\text{ m}^2$.
 
 Peak local density is calculated as:
 
@@ -260,20 +259,20 @@ The simulation also records the time at which each pedestrian exits. T95 is obta
 ### 3.8 Main Parameter Table
 
 | Symbol / Parameter | Meaning | Units | Value / Range | Source |
-|---|---|---|---|---|
+| ------------------ | ------- | ----- | ------------- | ------ |
 | W | Environment width | m | 40 | Model setting |
 | H | Environment height | m | 20 | Model setting |
-| \(r_i\) | Pedestrian radius | m | 0.3 | Assumed |
-| \(v_i^0\) | Desired walking speed | m/s | 0.8–1.6 | Assumed uniform range |
-| \(\tau\) | Relaxation time | s | 0.5 | Model setting |
+| $r_i$ | Pedestrian radius | m | 0.3 | Assumed |
+| $v_i^0$ | Desired walking speed | m/s | 0.8–1.6 | Assumed uniform range |
+| $\tau$ | Relaxation time | s | 0.5 | Model setting |
 | A | Pedestrian interaction acceleration coefficient | m/s² | 2.0 | Assumed |
 | B | Pedestrian interaction decay parameter | m | 0.5 | Assumed |
-| \(A_w\) | Wall interaction acceleration coefficient | m/s² | 2.0 | Assumed |
-| \(B_w\) | Wall interaction decay parameter | m | 0.5 | Assumed |
-| \(\Delta t\) | Time step | s | 0.05 | Numerical setting |
-| \(a_{\max}\) | Maximum acceleration | m/s² | 4.0 | Numerical limit |
-| \(v_{\max}\) | Maximum speed | m/s | 2.0 | Numerical limit |
-| \(d_{\min}\) | Minimum initial separation | m | 0.65 | Initial placement rule |
+| $A_w$ | Wall interaction acceleration coefficient | m/s² | 2.0 | Assumed |
+| $B_w$ | Wall interaction decay parameter | m | 0.5 | Assumed |
+| $\Delta t$ | Time step | s | 0.05 | Numerical setting |
+| $a_{\max}$ | Maximum acceleration | m/s² | 4.0 | Numerical limit |
+| $v_{\max}$ | Maximum speed | m/s | 2.0 | Numerical limit |
+| $d_{\min}$ | Minimum initial separation | m | 0.65 | Initial placement rule |
 | Cell dimensions | Density grid size | m × m | 2 × 2 | Measurement setting |
 | Maximum steps | Simulation step limit | steps | 2,000 | Simulation setting |
 | Maximum duration | Simulation time limit | s | 100 | Calculated from time step and step limit |
@@ -282,7 +281,7 @@ The simulation also records the time at which each pedestrian exits. T95 is obta
 | Maximum crowd size | Upper triangular distribution limit | pedestrians | 500 | Uncertainty experiment |
 | Uncertainty samples | Number of sampled crowd sizes | samples | 30 | Experimental setting |
 
-The interaction strengths A and \(A_w\) are assumed acceleration coefficients used in the simplified interaction calculations. They have not been calibrated against measured pedestrian data.
+The interaction strengths $A$ and $A_w$ are assumed acceleration coefficients used in the simplified interaction calculations. They have not been calibrated against measured pedestrian data.
 
 ## 4. Numerical Method
 
@@ -312,7 +311,7 @@ Random pedestrian positions and walking speeds are generated using NumPy random 
 Verification checks were performed to examine whether the implementation follows the defined model rules and produces valid numerical results. The checks cover pedestrian generation, movement calculations, boundary conditions, exit management, density calculations and repeated simulation experiments.
 
 | Check | Expected | Obtained | Pass? |
-|---|---|---|---|
+| ----- | -------- | -------- | ----- |
 | Pedestrian count | Requested number of agents generated | Correct number generated | Yes |
 | Position and velocity dimensions | Each agent has two position and velocity components | Valid array dimensions | Yes |
 | Initial position boundaries | All generated positions remain in the placement region | Boundary checks passed | Yes |
@@ -335,7 +334,7 @@ These checks demonstrate implementation consistency under the tested conditions.
 ## 6. Concepts Applied
 
 | Concept | Where it is used in this project |
-|---|---|
+| ------- | ------------------------------- |
 | Agent-based modelling | Represents each pedestrian as an individual agent with position, velocity, desired speed and interaction properties. |
 | Particle-based simulation | Represents pedestrians as moving entities within a two-dimensional environment. |
 | Social-force-inspired modelling | Combines desired movement, pedestrian repulsion and boundary repulsion to calculate acceleration. |
