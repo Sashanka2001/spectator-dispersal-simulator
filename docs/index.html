@@ -1,181 +1,613 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>[Project Title]: Interactive Demo</title>
-<!--
-  STARTER TEMPLATE. The example simulation below is a Monte Carlo estimate of pi.
-  It is here only to show the required structure:
-    - at least three adjustable parameters
-    - Start / Pause / Reset
-    - a live visualisation
-    - at least one quantitative output, checked against a reference value
-    - an "About / How to use" panel
-  Replace the SIMULATION section and the controls with your own model.
--->
-<style>
-  :root { --ink:#1b2430; --muted:#5d6876; --line:#d8dee6; --accent:#1f6f8b; --bg:#f6f8fa; --ok:#1a7f37; --warn:#b35900; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); }
-  header { padding:16px 20px; background:#fff; border-bottom:1px solid var(--line); }
-  header h1 { margin:0; font-size:1.3rem; }
-  header p { margin:4px 0 0; color:var(--muted); font-size:.95rem; }
-  main { display:grid; grid-template-columns: 300px 1fr; gap:16px; padding:16px 20px; max-width:1200px; margin:0 auto; }
-  @media (max-width: 800px) { main { grid-template-columns: 1fr; } }
-  .panel { background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px; }
-  label { display:block; font-size:.9rem; margin:12px 0 4px; }
-  label span { float:right; font-variant-numeric: tabular-nums; color:var(--muted); }
-  input[type=range] { width:100%; }
-  input[type=number] { width:100%; padding:6px; border:1px solid var(--line); border-radius:4px; }
-  .buttons { display:flex; gap:8px; margin-top:16px; }
-  button { flex:1; padding:8px; border:1px solid var(--accent); background:var(--accent); color:#fff; border-radius:6px; font-size:.95rem; cursor:pointer; }
-  button.secondary { background:#fff; color:var(--accent); }
-  canvas { width:100%; max-width:560px; aspect-ratio:1; display:block; margin:0 auto; background:#fff; border:1px solid var(--line); }
-  .stats { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:10px; margin-top:14px; }
-  .stat { border:1px solid var(--line); border-radius:6px; padding:10px; }
-  .stat .k { font-size:.8rem; color:var(--muted); }
-  .stat .v { font-size:1.2rem; font-variant-numeric: tabular-nums; }
-  .check.ok { color:var(--ok); } .check.warn { color:var(--warn); }
-  details { margin-top:16px; }
-  summary { cursor:pointer; font-weight:600; }
-  details p, details li { font-size:.92rem; line-height:1.45; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spectator Dispersal Simulator</title>
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --panel: #fff;
+      --ink: #17243a;
+      --muted: #66758b;
+      --line: #e2e8f0;
+      --accent: #2563eb;
+      --teal: #0f766e;
+      --orange: #d97706;
+      --red: #dc2626
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.5 Inter, Segoe UI, Arial, sans-serif
+    }
+
+    header {
+      background: #101d35;
+      color: #fff;
+      padding: 24px max(22px, calc((100vw - 1180px)/2))
+    }
+
+    header .eyebrow {
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #9fb5d5
+    }
+
+    h1 {
+      margin: 5px 0 4px;
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.15
+    }
+
+    header p {
+      margin: 7px 0 0;
+      color: #c8d4e5;
+      max-width: 800px
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 22px auto;
+      padding: 0 18px 36px
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 5px 18px #15233b0a
+    }
+
+    .panel h2 {
+      font-size: 17px;
+      margin: 0 0 14px
+    }
+
+    .control {
+      margin: 0 0 19px
+    }
+
+    .control label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 650;
+      font-size: 13px;
+      margin-bottom: 7px
+    }
+
+    .value {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--accent)
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink)
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white
+    }
+
+    .secondary {
+      background: #e9eef7;
+      color: #20314d
+    }
+
+    .quiet {
+      background: #f1f5f9;
+      color: #475569
+    }
+
+    .status {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 18px
+    }
+
+    .visual h2 {
+      margin-bottom: 4px
+    }
+
+    .sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 0 12px
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fbfdff
+    }
+
+    .legend {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fff
+    }
+
+    .metric .name {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em
+    }
+
+    .metric .num {
+      font-size: 22px;
+      font-weight: 750;
+      margin-top: 3px;
+      font-variant-numeric: tabular-nums
+    }
+
+    .metric .unit {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .bottom {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px
+    }
+
+    .note {
+      font-size: 13px;
+      color: #46556b
+    }
+
+    .note strong {
+      color: var(--ink)
+    }
+
+    .reference {
+      border: 1px solid #b8d9ce;
+      background: #f0faf6;
+      border-radius: 10px;
+      padding: 13px;
+      margin-top: 13px;
+      font-size: 13px
+    }
+
+    .reference.fail {
+      border-color: #f3c6c6;
+      background: #fff5f5
+    }
+
+    .reference .title {
+      font-weight: 750;
+      margin-bottom: 4px
+    }
+
+    details {
+      margin-top: 16px
+    }
+
+    .about {
+      font-size: 13px;
+      color: #48576d
+    }
+
+    .about h3 {
+      font-size: 14px;
+      color: var(--ink);
+      margin: 13px 0 4px
+    }
+
+    .about ul {
+      padding-left: 19px;
+      margin: 5px 0
+    }
+
+    footer {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 18px 24px;
+      color: var(--muted);
+      font-size: 11px
+    }
+
+    @media(max-width:850px) {
+      .layout {
+        grid-template-columns: 1fr
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+      }
+    }
+
+    @media(max-width:480px) {
+      .bottom {
+        grid-template-columns: 1fr
+      }
+
+      .metric .num {
+        font-size: 19px
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header>
-  <h1>[Project Title]</h1>
-  <p>[One-sentence description of what the simulation shows.]</p>
-</header>
-
-<main>
-  <section class="panel" aria-label="Controls">
-    <!-- REPLACE: your own parameters (at least three) -->
-    <label for="nTotal">Total samples <span id="nTotalVal"></span></label>
-    <input id="nTotal" type="range" min="1000" max="200000" step="1000" value="50000">
-
-    <label for="speed">Samples per frame (speed) <span id="speedVal"></span></label>
-    <input id="speed" type="range" min="10" max="5000" step="10" value="200">
-
-    <label for="seed">Random seed</label>
-    <input id="seed" type="number" value="42" min="1" step="1">
-
-    <div class="buttons">
-      <button id="startBtn">Start</button>
-      <button id="resetBtn" class="secondary">Reset</button>
+  <header>
+    <h1>Spectator Dispersal Simulator</h1>
+    <p>An interactive, simplified agent-based model exploring how crowd size, exit availability and walking speed
+      influence pedestrian dispersal in a hypothetical 40 m × 20 m area.</p>
+  </header>
+  <main>
+    <div class="layout">
+      <aside class="panel">
+        <h2>Simulation settings</h2>
+        <div class="control">
+          <label for="crowd">Number of pedestrians <span class="value" id="crowdVal">100</span></label>
+          <input id="crowd" type="range" min="50" max="500" step="10" value="100">
+          <div class="hint">Initial crowd size: 50–500 agents</div>
+        </div>
+        <div class="control">
+          <label for="exits">Exit configuration</label>
+          <select id="exits">
+            <option value="1" selected>One exit</option>
+            <option value="2">Two exits</option>
+            <option value="3">Three exits</option>
+          </select>
+          <div class="hint">Exits are positioned along the right boundary.</div>
+        </div>
+        <div class="control">
+          <label for="speed">Walking-speed multiplier <span class="value" id="speedVal">1.00×</span></label>
+          <input id="speed" type="range" min="0.70" max="1.30" step="0.05" value="1">
+          <div class="hint">Scales each pedestrian's baseline desired speed.</div>
+        </div>
+        <div class="buttons">
+          <button class="primary" id="start">Start</button>
+          <button class="secondary" id="pause" disabled>Pause</button>
+          <button class="quiet" id="reset">Reset</button>
+        </div>
+        <div class="status" id="status" aria-live="polite">Ready. Press Start to begin.</div>
+        <div class="reference" id="reference">
+          <div class="title">Notebook reference check</div>
+          Default reference case: 100 pedestrians, one exit, speed multiplier 1.00×. Expected T95 = 40.20 s, clearance =
+          47.75 s, peak density = 1.25 persons/m². Tolerance: ±0.05 s for time values.
+        </div>
+      </aside>
+      <section>
+        <div class="panel visual">
+          <h2>Live pedestrian movement</h2>
+          <p class="sub">Top-down view · 40 m × 20 m · Each dot represents one pedestrian</p>
+          <canvas id="scene" width="900" height="450" role="img"
+            aria-label="Top-down pedestrian simulation area with exit openings on the right"></canvas>
+          <div class="legend">
+            <span><i class="dot" style="background:#2563eb"></i>Pedestrians inside</span>
+            <span><i class="dot" style="background:#16a34a"></i>Exit openings</span>
+            <span><i class="dot" style="background:#94a3b8"></i>Boundary</span>
+          </div>
+        </div>
+        <div class="metrics">
+          <div class="metric">
+            <div class="name">Simulation time</div>
+            <div class="num" id="time">0.00</div>
+            <div class="unit">seconds</div>
+          </div>
+          <div class="metric">
+            <div class="name">Exited</div>
+            <div class="num" id="exited">0 / 100</div>
+            <div class="unit">pedestrians</div>
+          </div>
+          <div class="metric">
+            <div class="name">T95</div>
+            <div class="num" id="t95">—</div>
+            <div class="unit">seconds</div>
+          </div>
+          <div class="metric">
+            <div class="name">Clearance time</div>
+            <div class="num" id="clearance">—</div>
+            <div class="unit">seconds</div>
+          </div>
+        </div>
+        <div class="bottom">
+          <div class="panel">
+            <h2>Congestion indicator</h2>
+            <div class="metric" style="padding:10px">
+              <div class="name">Peak local density</div>
+              <div class="num" id="density">—</div>
+              <div class="unit">persons/m² · 2 m × 2 m cells</div>
+            </div>
+            <p class="note" id="progressNote">No pedestrians have exited yet.</p>
+          </div>
+          <div class="panel">
+            <h2>Exit utilisation</h2>
+            <div id="exitUse" class="note">The number of pedestrians using each exit will appear here after the
+              simulation starts.</div>
+          </div>
+        </div>
+        <details class="panel">
+          <summary><strong>About / How to use</strong></summary>
+          <div class="about">
+            <h3>Purpose</h3>
+            <p>This browser demo is a simplified Social Force Model-inspired pedestrian simulation. It uses desired
+              movement towards the nearest exit, repulsive pedestrian interactions and boundary repulsion. It represents
+              a hypothetical environment, not the actual street map of Kandy.</p>
+            <h3>How to use</h3>
+            <ul>
+              <li>Choose the initial number of pedestrians.</li>
+              <li>Select one, two or three exit openings.</li>
+              <li>Adjust the walking-speed multiplier.</li>
+              <li>Press Start to run, Pause to stop temporarily, or Reset to restore the selected settings.</li>
+            </ul>
+            <h3>Reading the outputs</h3>
+            <p>T95 is the time when at least 95% of pedestrians have exited. Clearance time is recorded when every
+              pedestrian has exited. Peak local density is the highest number of pedestrians per square metre recorded
+              in any 2 m × 2 m cell during the run.</p>
+            <h3>Model settings and limitations</h3>
+            <p>The environment is 40 m × 20 m. The model uses a 0.05 s time step, 0.5 s relaxation time, 2.0 m/s maximum
+              speed and 4.0 m/s² maximum acceleration. Pedestrian radii are 0.3 m and initial placement uses a 0.65 m
+              minimum separation. The model does not include real street geometry, measured attendance, group behaviour,
+              vehicles or emergency responses.</p>
+            <h3>Notebook reference case</h3>
+            <p>The default 100-pedestrian, one-exit, 1.00× speed case uses the same fixed initial positions and desired
+              speeds as the notebook's seed-42 baseline. The comparison panel checks T95, clearance time and peak
+              density against the notebook output.</p>
+          </div>
+        </details>
+      </section>
     </div>
+  </main>
+  <footer>Educational pedestrian simulation using assumed parameters and synthetic data. Not intended for real-world
+    crowd-safety predictions</footer>
+  <script>
+    const BASELINE = { "positions": [[23.670769359566975, 8.899811915536942], [26.04074175751871, 13.55262452306855], [4.636965740854187, 18.561202329461608], [23.311911655729883, 15.149157494985168], [5.5871817149152845, 9.106946882120209], [12.382344678512275, 17.681769799274832], [20.028223362258608, 15.809709038874939], [14.415597567165271, 5.0902969921259835], [17.528374036443374, 2.148710609875156], [25.173672815792298, 12.369959184197167], [23.226456722390466, 7.381467426337631], [29.17954468305729, 17.076180183799558], [23.794737918065334, 4.503496741335416], [15.068188104356956, 1.788467784170118], [6.320105777891339, 13.294881158364184], [22.85334036541888, 18.41517518381578], [11.123110027868254, 7.66827470862764], [15.147562715722621, 4.410484463517142], [8.353461773424755, 13.056651904285186], [14.24025372842526, 15.988207529041073], [21.607422856062975, 6.622599544876739], [25.30327443906563, 15.485758434942433], [12.849394612844884, 6.1899058707443935], [21.109874111299312, 3.5155447049675765], [7.5974296693030325, 1.1325208555180992], [24.033882570059873, 12.967315418656579], [21.744630601537384, 15.053122558395422], [14.849641715073519, 11.237341527152088], [5.9143159475744085, 3.061541323647522], [20.715282930133206, 9.479731710576385], [17.826610981473287, 14.76997943348846], [19.772112960016543, 10.964429211843925], [17.65780050087158, 6.4711017651270195], [2.8628993679023034, 8.860913006182523], [8.008370838946817, 8.35351558704345], [25.895286051508652, 5.210910745576133], [3.6324767672938485, 6.064910056395938], [10.220625217467141, 12.914497265084112], [20.600779129166852, 8.31496350592127], [24.79257077064897, 4.005512558338671], [2.6359380477480934, 2.6208614939615513], [22.226061816700607, 9.313790144524972], [6.51560981294085, 10.018805951860543], [14.49237571607286, 7.858382069736685], [12.130753095494931, 2.5776985476898178], [5.304165259374429, 18.31415796189126], [27.440259339812997, 13.594728408593491], [9.444358920866549, 18.44517479225903], [23.80502531104225, 13.90402340486192], [14.582122060026084, 5.900348113212862], [4.69894694029798, 17.24684313778915], [10.56678547621827, 11.425952240954128], [6.949637922298487, 16.41905711366276], [14.098605113702904, 12.291559132643977], [18.354743129556596, 12.69723882798676], [4.3644409919168945, 8.484533239070974], [3.1651968681329894, 9.89183474640134], [11.236113945317989, 3.601435399588844], [4.895283096231446, 11.577602299198817], [6.776603119032811, 17.65216213078235], [18.269711911611058, 7.243656481627067], [18.54563376147967, 1.410469678534555], [28.83965797076047, 9.681461864972205], [23.916586363008015, 2.4891399986038945], [15.62643326346849, 9.832725898381376], [28.259140739299518, 11.291104942769357], [15.257703229594707, 5.805561935654085], [11.28393192559146, 10.37210324448768], [14.289520888541308, 1.3890174378459477], [25.13617387744202, 17.1308938931158], [5.926974491961102, 10.972650583702888], [5.040120751792419, 13.10032167471661], [8.445991745056663, 1.673426011171236], [17.535869142961534, 7.676601109523897], [10.87988899903603, 18.15218911125541], [10.145699467923322, 10.271028326170862], [9.167022535892876, 17.848784260881338], [6.609018892296508, 1.8083911490619218], [14.182717680085062, 18.862760153005066], [26.96696345513759, 14.474944350225085], [26.942189744598696, 17.082039514561536], [16.528034090820576, 6.686722932954274], [22.910109117772727, 5.724289286611564], [28.23076821494582, 5.3374703501023255], [5.437222107521609, 15.96002809824831], [6.291960865485834, 4.226829546839303], [18.782718162583617, 16.74211673507436], [7.500170640008051, 6.585826112201706], [23.767335470752972, 18.492875669097412], [16.020753213665586, 3.590155045922514], [2.3902160558296432, 5.133808539979395], [5.4113101295988715, 10.113938769171394], [21.439348198000822, 11.460098965976243], [7.593718246481613, 15.47424147128073], [22.031399629242447, 14.301712070479752], [27.971751428182213, 8.15640748884893], [20.560197957380307, 18.20121862684546], [10.02049435269754, 17.646551727616487], [2.696065758815177, 10.993564761882844], [19.751303127070383, 2.9061532675135595]], "speeds": [0.9122716776511302, 1.135291455453043, 1.5729855297145454, 1.2768340425874984, 1.546418577280169, 1.4434887324903767, 1.1739052812442332, 1.42781075940175, 0.8142694271815902, 0.887315197412588, 1.4635428919061892, 1.4374536706601295, 0.986112593573147, 1.224615672479243, 1.2848126565600089, 1.4941911630208091, 1.2824857258709805, 1.1300572554189443, 1.0993472347257462, 1.140705669098808, 1.3215448204639793, 1.49399250540186, 1.1631175056610399, 0.9982716503610866, 0.989329890398065, 1.3968114241947571, 1.4532550107391284, 0.8842224638833001, 0.8532470855641425, 1.2755469310051615, 0.9169385953541587, 1.4597313523650732, 1.0482677391392596, 0.9150975463769142, 1.5367763779899604, 0.9324253781882226, 1.0277760658703485, 0.9228907161536469, 0.892392050932284, 0.816918413069152, 0.8443163273314082, 0.9397131767486822, 0.8427055461017403, 1.2729150528887772, 1.3445716214396053, 1.1149043654656228, 1.0543928775616396, 1.203620989617784, 1.500003953787687, 1.4809053014577649, 0.8347800496102336, 0.9451987276772194, 0.9893958968835168, 0.9995100606657695, 1.2569861213942182, 1.133009940562554, 0.8394032959420752, 1.0988913107676574, 1.21900235897411, 0.8813375223229728, 1.4667668430308478, 0.8415694931720834, 1.5398734952144497, 0.8792905132639004, 1.4748599612782023, 1.5221225151420938, 1.5836565444692743, 1.441620704218875, 1.4235820326170632, 1.3139866207964381, 1.4231970836625032, 0.9076417667305177, 1.22885442875811, 1.2113782961523316, 1.486057715298046, 1.1702394924748127, 1.1080715968802828, 1.311650616989688, 1.0131706540006769, 0.9118147287631655, 1.1823018192189967, 1.1335114948759082, 0.986055952423099, 1.0940094480921025, 1.093113959860998, 1.0619964515300364, 1.1035712637815434, 1.3485946763647565, 1.0375011796570284, 1.5590863413722724, 1.5330784156305424, 1.184728342640063, 1.0626889640037511, 1.2283478318640026, 1.4788483910188996, 1.3220698724480817, 1.443513462357662, 1.2261778208525922, 1.3063341034140965, 1.0305244913459695] };
+    const W = 40, H = 20, DT = 0.05, MAX_STEPS = 2000, TAU = 0.5, MAX_SPEED = 2.0, MAX_ACCEL = 4.0, RADIUS = 0.3;
+    const CONFIGS = {
+      1: [[8, 12]],
+      2: [[4, 8], [12, 16]],
+      3: [[2, 6], [8, 12], [14, 18]]
+    };
+    const $ = id => document.getElementById(id);
+    const canvas = $("scene"), ctx = canvas.getContext("2d");
+    let state = null, raf = null, playing = false, stepsPerFrame = 3;
 
-    <details>
-      <summary>About / How to use</summary>
-      <!-- REPLACE: explain your model, its parameters and how to read the outputs -->
-      <p>This example estimates &pi; by sampling random points in a unit square and counting the fraction that falls inside the quarter circle: &pi; &asymp; 4 &times; (inside / total).</p>
-      <ul>
-        <li>Set the parameters, then press <b>Start</b>. <b>Pause</b> stops the run; <b>Reset</b> clears it and applies new settings.</li>
-        <li>The estimate is shown with a 95% confidence interval. The error should shrink roughly as 1/&radic;N.</li>
-        <li>The check compares the estimate with the reference value; the notebook gives the same result for the default settings.</li>
-      </ul>
-    </details>
-  </section>
-
-  <section class="panel" aria-label="Simulation">
-    <canvas id="view" width="560" height="560" aria-label="Live visualisation"></canvas>
-    <div class="stats">
-      <div class="stat"><div class="k">Samples so far</div><div class="v" id="outN">0</div></div>
-      <div class="stat"><div class="k">Estimate &plusmn; 95% CI</div><div class="v" id="outEst">–</div></div>
-      <div class="stat"><div class="k">Reference value</div><div class="v" id="outRef">3.14159</div></div>
-      <div class="stat"><div class="k">Check</div><div class="v check" id="outCheck">–</div></div>
-    </div>
-  </section>
-</main>
-
-<script>
-// ---------- seeded random number generator (reproducible runs) ----------
-function mulberry32(a) {
-  return function () {
-    a |= 0; a = a + 0x6D2B79F5 | 0;
-    let t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-
-// ---------- SIMULATION (REPLACE with your own model) ----------
-const REFERENCE = Math.PI;          // analytic / notebook reference value
-const sim = { rng: null, n: 0, inside: 0, nTotal: 0 };
-
-function initSim(params) {
-  sim.rng = mulberry32(params.seed);
-  sim.n = 0; sim.inside = 0; sim.nTotal = params.nTotal;
-}
-
-function stepSim(k, draw) {                 // advance the model by k samples
-  for (let i = 0; i < k && sim.n < sim.nTotal; i++) {
-    const x = sim.rng(), y = sim.rng();
-    const hit = x * x + y * y <= 1;
-    sim.n++; if (hit) sim.inside++;
-    draw(x, y, hit);
-  }
-}
-
-function estimate() {                       // quantitative output with uncertainty
-  if (sim.n === 0) return null;
-  const p = sim.inside / sim.n;
-  const est = 4 * p;
-  const se = 4 * Math.sqrt(p * (1 - p) / sim.n);
-  return { est, ci: 1.96 * se };
-}
-
-// ---------- UI wiring (keep the pattern, adapt the details) ----------
-const $ = (id) => document.getElementById(id);
-const ctx = $("view").getContext("2d");
-let running = false, frame = null;
-
-function params() {
-  return { nTotal: +$("nTotal").value, speed: +$("speed").value, seed: Math.max(1, Math.floor(+$("seed").value) || 1) };
-}
-function showParams() {
-  $("nTotalVal").textContent = (+$("nTotal").value).toLocaleString();
-  $("speedVal").textContent = (+$("speed").value).toLocaleString();
-}
-function clearView() {
-  const w = ctx.canvas.width;
-  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, w, w);
-  ctx.strokeStyle = "#1b2430"; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(0, w, w, -Math.PI / 2, 0); ctx.stroke();
-}
-function drawPoint(x, y, hit) {
-  const w = ctx.canvas.width;
-  ctx.fillStyle = hit ? "rgba(31,111,139,0.55)" : "rgba(179,89,0,0.55)";
-  ctx.fillRect(x * w, (1 - y) * w, 1.5, 1.5);
-}
-function showOutputs() {
-  $("outN").textContent = sim.n.toLocaleString();
-  const e = estimate();
-  if (!e) { $("outEst").textContent = "–"; $("outCheck").textContent = "–"; $("outCheck").className = "v check"; return; }
-  $("outEst").textContent = `${e.est.toFixed(4)} ± ${e.ci.toFixed(4)}`;
-  const ok = Math.abs(e.est - REFERENCE) <= e.ci;
-  $("outCheck").textContent = ok ? "Within CI" : "Outside CI";
-  $("outCheck").className = "v check " + (ok ? "ok" : "warn");
-}
-function loop() {
-  stepSim(params().speed, drawPoint);
-  showOutputs();
-  if (sim.n >= sim.nTotal) { stop(); $("startBtn").textContent = "Done"; $("startBtn").disabled = true; return; }
-  frame = requestAnimationFrame(loop);
-}
-function start() { running = true; $("startBtn").textContent = "Pause"; frame = requestAnimationFrame(loop); }
-function stop() { running = false; if (frame) cancelAnimationFrame(frame); $("startBtn").textContent = "Start"; }
-function reset() {
-  stop(); initSim(params()); clearView(); showOutputs();
-  $("startBtn").disabled = false; $("startBtn").textContent = "Start";
-}
-
-$("startBtn").addEventListener("click", () => (running ? stop() : start()));
-$("resetBtn").addEventListener("click", reset);
-["nTotal", "speed"].forEach((id) => $(id).addEventListener("input", showParams));
-["nTotal", "seed"].forEach((id) => $(id).addEventListener("change", reset));
-$("outRef").textContent = REFERENCE.toFixed(5);
-showParams(); reset();
-</script>
+    function mulberry32(a) { return function () { let t = a += 0x6D2B79F5; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    function makeCrowd(n, speedFactor) {
+      const p = BASELINE.positions.slice(0, Math.min(n, 100)).map(v => v.slice());
+      const s = BASELINE.speeds.slice(0, Math.min(n, 100));
+      if (n > 100) {
+        const rand = mulberry32(42 + n);
+        while (p.length < n) {
+          const candidate = [2 + rand() * 28, 1 + rand() * 18];
+          if (p.every(q => Math.hypot(q[0] - candidate[0], q[1] - candidate[1]) >= 0.65)) p.push(candidate);
+          if (p.length < n && p.length > 1000) break;
+        }
+        while (s.length < n) s.push(0.8 + rand() * 0.8);
+      }
+      return { positions: p, velocities: p.map(() => [0, 0]), speeds: s.map(v => v * speedFactor), radii: p.map(() => RADIUS) };
+    }
+    function createState() {
+      const n = Number($("crowd").value), exits = CONFIGS[Number($("exits").value)];
+      const crowd = makeCrowd(n, Number($("speed").value));
+      return { ...crowd, exits, n, exited: Array(n).fill(false), exitTimes: Array(n).fill(null), exitUsed: Array(n).fill(-1), time: 0, t95: null, clearance: null, peakDensity: 0, done: false, step: 0, exitCounts: Array(exits.length).fill(0) };
+    }
+    function activeIndices() { const a = []; for (let i = 0; i < state.n; i++)if (!state.exited[i]) a.push(i); return a; }
+    function densityNow() {
+      const counts = new Array(20 * 10).fill(0);
+      for (let i = 0; i < state.n; i++)if (!state.exited[i]) {
+        const x = Math.max(0, Math.min(19, Math.floor(state.positions[i][0] / 2)));
+        const y = Math.max(0, Math.min(9, Math.floor(state.positions[i][1] / 2)));
+        counts[y * 20 + x]++;
+      }
+      return Math.max(0, ...counts) / 4;
+    }
+    function oneStep() {
+      const ids = activeIndices(); if (ids.length === 0) { state.done = true; return; }
+      const pos = ids.map(i => state.positions[i]), vel = ids.map(i => state.velocities[i]), speeds = ids.map(i => state.speeds[i]), radii = ids.map(i => state.radii[i]);
+      const m = ids.length, acc = Array.from({ length: m }, () => [0, 0]);
+      // Desired acceleration towards the nearest exit centre.
+      for (let a = 0; a < m; a++) {
+        let best = Infinity, target = null;
+        for (const [lo, hi] of state.exits) { const tx = W, ty = (lo + hi) / 2, d = Math.hypot(tx - pos[a][0], ty - pos[a][1]); if (d < best) { best = d; target = [tx, ty]; } }
+        const len = Math.max(1e-12, best), dx = (target[0] - pos[a][0]) / len, dy = (target[1] - pos[a][1]) / len;
+        acc[a][0] += (speeds[a] * dx - vel[a][0]) / TAU;
+        acc[a][1] += (speeds[a] * dy - vel[a][1]) / TAU;
+      }
+      // Pairwise exponential pedestrian repulsion.
+      for (let a = 0; a < m; a++)for (let b = 0; b < m; b++)if (a !== b) {
+        const dx = pos[a][0] - pos[b][0], dy = pos[a][1] - pos[b][1], d = Math.hypot(dx, dy);
+        if (d > 0) { const strength = 2.0 * Math.exp(((radii[a] + radii[b]) - d) / 0.5); acc[a][0] += strength * dx / d; acc[a][1] += strength * dy / d; }
+      }
+      // Boundary repulsion, except where the right boundary contains an exit.
+      for (let a = 0; a < m; a++) {
+        const x = pos[a][0], y = pos[a][1], r = radii[a];
+        acc[a][0] += 2 * Math.exp((r - x) / 0.5);
+        acc[a][1] += 2 * Math.exp((r - y) / 0.5);
+        acc[a][1] -= 2 * Math.exp((r - (H - y)) / 0.5);
+        const inExit = state.exits.some(([lo, hi]) => y >= lo && y <= hi);
+        if (!inExit) acc[a][0] -= 2 * Math.exp((r - (W - x)) / 0.5);
+      }
+      // Explicit Euler update: velocity first, position from previous velocity.
+      const nextV = [], nextP = [];
+      for (let a = 0; a < m; a++) {
+        let ax = acc[a][0], ay = acc[a][1], am = Math.hypot(ax, ay);
+        if (am > MAX_ACCEL) { ax *= MAX_ACCEL / am; ay *= MAX_ACCEL / am; }
+        let vx = vel[a][0] + ax * DT, vy = vel[a][1] + ay * DT, vm = Math.hypot(vx, vy);
+        if (vm > MAX_SPEED) { vx *= MAX_SPEED / vm; vy *= MAX_SPEED / vm; }
+        nextV.push([vx, vy]);
+        nextP.push([pos[a][0] + vel[a][0] * DT, pos[a][1] + vel[a][1] * DT]);
+      }
+      const nextTime = (state.step + 1) * DT;
+      for (let a = 0; a < m; a++) {
+        const id = ids[a]; let [x, y] = nextP[a], [vx, vy] = nextV[a], r = state.radii[id];
+        const exitIndex = state.exits.findIndex(([lo, hi]) => y >= lo && y <= hi);
+        if (x >= W && exitIndex !== -1) {
+          state.exited[id] = true; state.exitTimes[id] = nextTime; state.exitUsed[id] = exitIndex;
+          state.positions[id] = [W, y]; state.velocities[id] = [0, 0]; state.exitCounts[exitIndex]++;
+        } else {
+          if (x < r) { x = r; vx = Math.max(0, vx); }
+          if (y < r) { y = r; vy = Math.max(0, vy); }
+          if (y > H - r) { y = H - r; vy = Math.min(0, vy); }
+          const inAny = state.exits.some(([lo, hi]) => y >= lo && y <= hi);
+          if (!inAny && x > W - r) { x = W - r; vx = Math.min(0, vx); }
+          state.positions[id] = [x, y]; state.velocities[id] = [vx, vy];
+        }
+      }
+      state.step++; state.time = nextTime;
+      const exitedCount = state.exited.filter(Boolean).length;
+      if (state.t95 === null && exitedCount >= Math.ceil(.95 * state.n)) state.t95 = state.time;
+      state.peakDensity = Math.max(state.peakDensity, densityNow());
+      if (exitedCount === state.n) {
+        state.clearance = Math.max(...state.exitTimes);
+        state.done = true;
+      }
+      if (state.step >= MAX_STEPS) state.done = true;
+    }
+    function draw() {
+      const cw = canvas.width, ch = canvas.height, pad = 38, scale = Math.min((cw - 2 * pad) / W, (ch - 2 * pad) / H), ox = (cw - W * scale) / 2, oy = (ch - H * scale) / 2;
+      ctx.clearRect(0, 0, cw, ch); ctx.fillStyle = "#f8fbff"; ctx.fillRect(0, 0, cw, ch);
+      // grid
+      ctx.strokeStyle = "#e8eef5"; ctx.lineWidth = 1;
+      for (let x = 0; x <= W; x += 2) { ctx.beginPath(); ctx.moveTo(ox + x * scale, oy); ctx.lineTo(ox + x * scale, oy + H * scale); ctx.stroke(); }
+      for (let y = 0; y <= H; y += 2) { ctx.beginPath(); ctx.moveTo(ox, oy + y * scale); ctx.lineTo(ox + W * scale, oy + y * scale); ctx.stroke(); }
+      // walls
+      ctx.strokeStyle = "#64748b"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + W * scale, oy); ctx.moveTo(ox, oy + H * scale); ctx.lineTo(ox + W * scale, oy + H * scale); ctx.moveTo(ox, oy); ctx.lineTo(ox, oy + H * scale); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ox + W * scale, oy); ctx.lineTo(ox + W * scale, oy + H * scale); ctx.stroke();
+      // exits overwrite wall
+      if (state) for (const [lo, hi] of state.exits) { ctx.strokeStyle = "#16a34a"; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(ox + W * scale, oy + (H - hi) * scale); ctx.lineTo(ox + W * scale, oy + (H - lo) * scale); ctx.stroke(); }
+      // agents
+      if (state) for (let i = 0; i < state.n; i++)if (!state.exited[i]) {
+        const [x, y] = state.positions[i]; ctx.beginPath(); ctx.arc(ox + x * scale, oy + (H - y) * scale, Math.max(2.4, RADIUS * scale * .42), 0, Math.PI * 2); ctx.fillStyle = "#2563eb"; ctx.fill();
+      }
+      ctx.fillStyle = "#64748b"; ctx.font = "12px Segoe UI,Arial"; ctx.fillText("0 m", ox - 3, oy + H * scale + 19); ctx.fillText("40 m", ox + W * scale - 25, oy + H * scale + 19); ctx.fillText("20 m", ox - 31, oy + 5);
+    }
+    function updateUI() {
+      const out = state.exited.filter(Boolean).length;
+      $("time").textContent = state.time.toFixed(2);
+      $("exited").textContent = `${out} / ${state.n}`;
+      $("t95").textContent = state.t95 === null ? "—" : state.t95.toFixed(2);
+      $("clearance").textContent = state.clearance === null ? "—" : state.clearance.toFixed(2);
+      $("density").textContent = state.peakDensity.toFixed(3);
+      $("progressNote").textContent = state.done ? (out === state.n ? "All pedestrians have exited." : "Maximum simulation duration reached before full clearance.") : `${state.n - out} pedestrians remain inside the environment.`;
+      $("exitUse").innerHTML = state.exits.map((e, i) => `<div style="margin:5px 0"><strong>Exit ${i + 1} (${e[0]}–${e[1]} m):</strong> ${state.exitCounts[i]} pedestrians</div>`).join("");
+      $("start").disabled = playing || state.done; $("pause").disabled = !playing;
+      $("status").textContent = state.done ? "Simulation completed. Press Reset to run another scenario." : playing ? "Simulation running…" : "Paused / ready.";
+      if (state.done) checkReference();
+    }
+    function checkReference() {
+      const ref = $("reference");
+      const isReferenceCase = state.n === 100 && Math.abs(Number($("speed").value) - 1) < 1e-9;
+      if (!isReferenceCase) { ref.className = "reference"; ref.innerHTML = '<div class="title">Notebook reference check</div>The notebook comparison is available for the original 100-pedestrian seed-42 crowd at 1.00× speed. Other crowd sizes or speed settings are exploratory scenarios.'; return; }
+      const expected = {
+        1: { t95: 40.20, clearance: 47.75, density: 1.25 },
+        2: { t95: 40.20, clearance: 46.55, density: 1.00 },
+        3: { t95: 39.85, clearance: 45.20, density: 1.00 }
+      }[Number($("exits").value)];
+      const ok = Math.abs(state.t95 - expected.t95) <= .05 && Math.abs(state.clearance - expected.clearance) <= .05 && Math.abs(state.peakDensity - expected.density) < 1e-9;
+      ref.className = "reference" + (ok ? "" : " fail");
+      ref.innerHTML = `<div class="title">${ok ? "PASS — matches notebook reference" : "CHECK — reference outside tolerance"}</div>Demo: T95 ${state.t95.toFixed(2)} s (notebook ${expected.t95.toFixed(2)} s); clearance ${state.clearance.toFixed(2)} s (notebook ${expected.clearance.toFixed(2)} s); peak density ${state.peakDensity.toFixed(2)} persons/m² (notebook ${expected.density.toFixed(2)}). Tolerance: ±0.05 s for time values; exact density grid result.`;
+    }
+    function frame() {
+      if (!playing) return;
+      for (let k = 0; k < stepsPerFrame && !state.done; k++)oneStep();
+      draw(); updateUI();
+      if (playing && !state.done) raf = requestAnimationFrame(frame); else playing = false;
+    }
+    function reset() {
+      playing = false; if (raf) cancelAnimationFrame(raf);
+      state = createState(); draw(); updateUI();
+      $("reference").className = "reference";
+      $("reference").innerHTML = '<div class="title">Notebook reference check</div>Default reference case: 100 pedestrians, one exit, speed multiplier 1.00×. Expected T95 = 40.20 s, clearance = 47.75 s, peak density = 1.25 persons/m². Tolerance: ±0.05 s for time values.';
+    }
+    $("crowd").addEventListener("input", () => { $("crowdVal").textContent = $("crowd").value; reset(); });
+    $("speed").addEventListener("input", () => { $("speedVal").textContent = Number($("speed").value).toFixed(2) + "×"; reset(); });
+    $("exits").addEventListener("change", reset);
+    $("start").addEventListener("click", () => { if (state.done) return; playing = true; updateUI(); raf = requestAnimationFrame(frame); });
+    $("pause").addEventListener("click", () => { playing = false; if (raf) cancelAnimationFrame(raf); updateUI(); });
+    $("reset").addEventListener("click", reset);
+    reset();
+  </script>
 </body>
+
 </html>
