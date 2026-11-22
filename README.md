@@ -2,7 +2,7 @@
 
 An interactive agent-based pedestrian simulation investigating how uncertain spectator crowd sizes and exit availability influence dispersal time and pedestrian congestion in a hypothetical environment.
 
-**[Live Demo](https://sashanka2001.github.io/spectator-dispersal-simulator/)** ·  [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Sashanka2001/spectator-dispersal-simulator/blob/main/notebook/spectator-dispersal-simulator.ipynb)
+**[Live Demo](https://sashanka2001.github.io/spectator-dispersal-simulator/)** · [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RYV0lGvVD7e03OvkxBqfnaaH3U2t3OXF?usp=sharing)
 
 ![Spectator Dispersal Simulator web demo](figures/web-demo.png)
 
