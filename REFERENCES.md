@@ -17,3 +17,11 @@
 [8] D. Helbing, I. Farkas, and T. Vicsek, “Simulating dynamical features of escape panic,” *Nature*, vol. 407, no. 6801, pp. 487–490, 2000, doi: 10.1038/35035023.
 
 [9] X. Chen, M. Treiber, V. Kanagaraj, and H. Li, “Social force models for pedestrian traffic – state of the art,” *Transport Reviews*, vol. 38, no. 5, pp. 625–653, 2018, doi: 10.1080/01441647.2017.1396265.
+
+[10] A. Schadschneider, H. Klüpfel, T. Kretz, C. Rogsch, and A. Seyfried, “Fundamentals of pedestrian and evacuation dynamics,” in *Multi-Agent Systems for Traffic and Transportation Engineering*, A. Bazzan and F. Klügl, Eds. Hershey, PA, USA: IGI Global, 2009, pp. 124–154, doi: 10.4018/978-1-60566-226-8.ch006.
+
+[11] S. P. Hoogendoorn and P. H. L. Bovy, “Pedestrian route-choice and activity scheduling theory and models,” *Transportation Research Part B: Methodological*, vol. 38, no. 2, pp. 169–190, Feb. 2004, doi: 10.1016/S0191-2615(03)00007-9.
+
+[12] S. C. Chapra and R. P. Canale, *Numerical Methods for Engineers*, 8th ed. New York, NY, USA: McGraw-Hill Education, 2021.
+
+[13] NumPy Developers, “Random sampling,” *NumPy Documentation*. [Online]. Available: <https://numpy.org/doc/stable/reference/random/>. [Accessed: Nov. 22, 2026].
