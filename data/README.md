@@ -38,6 +38,6 @@ No external dataset is required to run the simulation. The synthetic inputs are 
 
 For the simulation methodology, parameter definitions and references, see:
 
-- [`notebook/spectator-dispersal-simulator.ipynb`](../notebook/spectator_dispersal_simulator.ipynb)
+- [`notebook/spectator_dispersal_simulator.ipynb`](../notebook/spectator_dispersal_simulator.ipynb)
 - [`THEORY.md`](../THEORY.md)
 - [`REFERENCES.md`](../REFERENCES.md)
