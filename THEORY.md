@@ -306,7 +306,31 @@ The explicit Euler method is a first-order numerical integration method. Its acc
 
 Random pedestrian positions and walking speeds are generated using NumPy random number generators with fixed seeds in the experiments. This supports reproducibility and allows corresponding exit configurations to be compared using the same initial crowd.
 
-## 5. Verification
+## 5. Independent Verification of Euler Integration
+
+The numerical integration method was independently examined using the relaxation equation:
+
+$$
+\frac{dv}{dt}=\frac{v_d-v}{\tau}
+$$
+
+The numerical Euler solution was compared with its exact analytical solution:
+
+$$
+v(t)=v_d+(v_0-v_d)e^{-t/\tau}
+$$
+
+The experiment used a relaxation time of 0.5 s, an initial velocity of 0.0 m/s, a desired velocity of 1.2 m/s, and a final evaluation time of 2.0 s.
+
+Four time-step sizes were examined: 0.1, 0.05, 0.025, and 0.0125 seconds.
+
+The measured convergence order was 0.9679, which is close to the theoretical first-order convergence expected from the explicit Euler method. The absolute error decreased as the time-step size was reduced.
+
+The convergence results are shown in [figures/euler_convergence.png](figures/euler_convergence.png).
+
+This experiment provides an independent numerical check of the Euler integration method used in the simulation. It does not constitute validation of the complete pedestrian movement model.
+
+## 6. Verification
 
 Verification checks were performed to examine whether the implementation follows the defined model rules and produces valid numerical results. The checks cover pedestrian generation, movement calculations, boundary conditions, exit management, density calculations and repeated simulation experiments.
 
@@ -331,7 +355,7 @@ These checks demonstrate implementation consistency under the tested conditions.
 
 ![Verification plot](figures/verification.png)
 
-## 6. Concepts Applied
+## 7. Concepts Applied
 
 | Concept | Where it is used in this project |
 | ------- | ------------------------------- |
@@ -347,6 +371,6 @@ These checks demonstrate implementation consistency under the tested conditions.
 | Sensitivity and uncertainty analysis | Examines the effects of different crowd sizes and randomly sampled crowd-size inputs. |
 | Model verification | Uses assertions and numerical checks to examine agent states, movement, exit conditions and density calculations. |
 
-## 7. References
+## 8. References
 
 The academic and technical references supporting the pedestrian movement model, numerical methods and simulation approach are listed in [REFERENCES.md](REFERENCES.md).
